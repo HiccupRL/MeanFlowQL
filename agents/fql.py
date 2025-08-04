@@ -153,17 +153,6 @@ class FQLAgent(flax.struct.PyTreeNode):
         )
         actions = self.network.select('actor_onestep_flow')(observations, noises)
         
-        
-        # # 统计截断前超出[-1,1]范围的值的比例
-        # total_values = actions.size
-        # clipped_values = jnp.sum((actions < -1) | (actions > 1))
-        # clip_ratio = clipped_values / total_values
-        # # 正确的JAX调试打印方式
-        # jax.debug.print("截断比例: {ratio} ({clipped}/{total})", 
-        #                ratio=clip_ratio, 
-        #                clipped=clipped_values, 
-        #                total=total_values)
-        
         actions = jnp.clip(actions, -1, 1)
         
         return actions
