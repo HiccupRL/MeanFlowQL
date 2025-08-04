@@ -42,7 +42,7 @@ def evaluate(
     num_video_episodes=0,
     video_frame_skip=3,
     eval_temperature=1,
-    train_dataset=None,  # 添加训练数据集参数，用于获取归一化统计信息
+    train_dataset=None,  # Add parameters for the training dataset to obtain normalization statistical information.
 ):
     """Evaluate the agent in the environment.
 
