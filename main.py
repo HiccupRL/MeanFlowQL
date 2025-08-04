@@ -1,8 +1,8 @@
 import os
 import platform
-# 设置 OpenGL 平台为 EGL
+# Set the OpenGL platform to EGL
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
-# 设置 MuJoCo 使用 EGL 渲染器
+# Set MuJoCo to use the EGL renderer.
 os.environ['MUJOCO_GL'] = 'egl'
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 # os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.3"
