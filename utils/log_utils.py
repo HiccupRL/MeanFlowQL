@@ -69,7 +69,7 @@ def setup_wandb(
     wandb_output_dir = "./wandb"
 ):
     """Set up Weights & Biases for logging."""
-    os.makedirs(wandb_output_dir, exist_ok=True)  # 创建目录，如果已存在则忽略
+    os.makedirs(wandb_output_dir, exist_ok=True)  # Create a directory and ignore it if it already exists.
     tags = [group] if group is not None else None
 
     init_kwargs = dict(
