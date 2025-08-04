@@ -16,11 +16,11 @@ from utils.dit_jax import MFDiT, MFDiT_SIM_e
 
 def inv_softsign(x, scale_norm_factor=0.5):
     """Inverse softsign function: inv_softsign(x) = x / (1 - |x|)"""
-    # 确保输入在有效范围内 (-1, 1)
+    # Ensure that the input is within the valid range (-1, 1).
     x_clipped = jnp.clip(x, -1 + 1e-7, 1 - 1e-7)
-    # 计算逆softsign
+    # Calculate the inverse softsign
     result = x_clipped / (1 - jnp.abs(x_clipped))
-    # 应用缩放因子
+    # Apply scaling factor
     return result * (1 - scale_norm_factor)
 
 
@@ -106,12 +106,12 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
         # modified the time schedule
         # t = jnp.sqrt(1 - (t - 1)**2) # add by hiccup 
         
-        # === 处理 inv_actions 逻辑 ===
+        # === Process the logic of inv_actions ===
         if self.config.get("inv_actions", False):
-            # 将动作从 [-1, 1] 映射到 ℝ 空间
+            # Map the action from [-1, 1] to the ℝ space.
             actions_y = inv_softsign(batch['actions'], self.config.get("scale_norm_factor", 0.18))
         else:
-            # 保持原始动作
+            # Keep the original movement.
             actions_y = batch['actions']
         # jax.debug.print("{}",actions_y)
         # Meanflow Training
@@ -166,12 +166,12 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
         rng, noise_rng = jax.random.split(rng, 2)
         t1, t2  = self.sample_discrete_t(rng, batch_size, time_steps=self.config.get("time_steps", 50))
         
-        # === 处理 inv_actions 逻辑 ===
+        # === Process the logic of inv_actions ===
         if self.config.get("inv_actions", False):
-            # 将动作从 [-1, 1] 映射到 ℝ 空间
+            # Map the action from [-1, 1] to the ℝ space.
             actions_y = inv_softsign(batch['actions'], self.config.get("scale_norm_factor", 0.18))
         else:
-            # 保持原始动作
+            # Keep the original action.
             actions_y = batch['actions']
         
         # Consistency
@@ -202,12 +202,12 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
         
         actions_y =  self.network.select('actor_bc_flow')(batch['observations'], noises, t = t_pred, params=grad_params)
         
-        # === 处理 inv_actions 逻辑 ===
+        # === Process the logic of inv_actions ===
         if self.config.get("inv_actions", False):
-            # 将动作从 ℝ 空间映射到 [-1, 1]
+            # Map the action from [-1, 1] to the ℝ space
             actions = jax.nn.soft_sign(actions_y) / (1 - self.config.get("scale_norm_factor", 0.18))
         else:
-            # 保持原始动作
+            # Keep the original action.
             actions = actions_y
         
         # Add bound_loss
@@ -401,12 +401,12 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
             actions_y = e - self.network.select('actor_bc_flow')(observations, e,  t)
             # actions_y = self.network.select('actor_bc_flow')(observations, e,  t)
 
-        # === 处理 inv_actions 逻辑 ===
+        # Process the logic of inv_actions ===
         if self.config.get("inv_actions", False):
-            # 将动作从 ℝ 空间映射到 [-1, 1]
+            # Map the action from [-1, 1] to the ℝ space.
             actions = jax.nn.soft_sign(actions_y) / (1 - self.config.get("scale_norm_factor", 0.18))
         else:
-            # 保持原始动作
+            # Keep the original action.
             actions = actions_y
 
         actions = jnp.clip(actions, -1, 1)
@@ -532,9 +532,9 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
                     partition[key_tuple] = 'actor'
                 else:
                     partition[key_tuple] = 'actor'
-            # 确保返回普通的 Python dict，而不是 FrozenDict
+            # Ensure to return a regular Python dict instead of a FrozenDict.
             unflattened = flax.traverse_util.unflatten_dict(partition)
-            return jax.tree_map(lambda x: x, unflattened)  # 转换为普通 dict
+            return jax.tree_map(lambda x: x, unflattened)  # Convert to a normal dict
 
         network_params = network_def.init(init_rng, **network_args)['params']
         # Add target_critic params
@@ -542,22 +542,22 @@ class MeanFlowQL_Agent_BETA(flax.struct.PyTreeNode):
         network_params_dict = unfreeze(network_params)
         network_params_dict['modules_target_critic'] = copy.deepcopy(network_params_dict['modules_critic'])
 
-        # 生成参数分区mask - 确保使用普通 dict
-        param_labels = param_partition(dict(network_params_dict))  # 显式转换为 dict
+        # Generate parameter partition mask - Ensure to use a regular dictionary.
+        param_labels = param_partition(dict(network_params_dict))  # Explicit conversion to dict
 
-        # 使用正确的mask tree创建multi_transform
+        # Create multi_transform using the correct mask tree.
         network_tx = optax.multi_transform(
             {
                 'critic': critic_tx,
                 'actor': actor_tx,
             },
-            param_labels  # 传入实际的mask tree而不是函数
+            param_labels  # Pass in the actual mask tree instead of the function.
         )
         
-        # 然后初始化优化器状态 - 确保使用普通 dict
-        opt_state = network_tx.init(dict(network_params_dict))  # 显式转换为 dict
+        # Then initialize the optimizer state - make sure to use a regular dict.
+        opt_state = network_tx.init(dict(network_params_dict))  # Explicit conversion to dict
         
-        # 创建 TrainState（使用FrozenDict）
+        # Create TrainState (using FrozenDict)
         network_params_frozen = freeze(network_params_dict)
         network = TrainState(
             step=1,
