@@ -309,13 +309,13 @@ class ActorVectorField_MeanFlow_newt(nn.Module):
             if not is_encoded and self.encoder is not None:
                 observations = self.encoder(observations)
 
-            # 将观察和动作连接起来
+            # Connect observations with actions.
             inputs = jnp.concatenate([observations, actions], axis=-1)
             
-            # 时间嵌入，直接设置维度与inputs相同
+            # Time embedding, directly set the dimension to be consistent with the inputs.
             t_emb = TimestepEmbedder(dim=inputs.shape[-1])(t)
             
-            # 将时间嵌入加到输入上
+            # Add time embedding to the input.
             inputs = inputs + t_emb
             
             v = self.mlp(inputs)
