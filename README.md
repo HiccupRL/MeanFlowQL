@@ -1,5 +1,5 @@
 # One-Step Generative Policies with Q-Learning: A Reformulation of MeanFlow
-
+[![AAAI](https://img.shields.io/badge/Paper-IEEE%20TIP-009689.svg)](https://ieeexplore.ieee.org/document/11174099) [![arXiv](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/2511.13035)
 ## Setup
 
 ### Environment Setup
