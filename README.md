@@ -2,6 +2,10 @@
 [![AAAI](https://img.shields.io/badge/AAAI-Accepted-87CEEB.svg)](https://aaai.org/)
 [![arXiv](https://img.shields.io/badge/Paper-arXiv-FFB6C1.svg)](https://arxiv.org/abs/2511.13035)
 
+<p align="center">
+  <img src="./toy_example/teaser.png" width="65%">
+</p>
+
 
 
 ## Setup
